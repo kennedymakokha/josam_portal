@@ -8,7 +8,7 @@ import { serialize } from "cookie";
 import bcrypt from "bcryptjs";
 import generateTokens from "../utils/generatetoken.util";
 import { parse } from "cookie";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { MakeActivationCode } from "../utils/generate_activation.util";
 
 
