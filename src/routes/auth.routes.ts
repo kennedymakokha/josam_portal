@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, logout, refresh, session_Check, updatePassword, activateuser, requestToken, verifyuser, getUsers } from "../controllers/auth.controller";
+import { register, login, logout, refresh, session_Check, updatePassword } from "../controllers/auth.controller";
 
 const router = Router();
 /**
@@ -32,7 +32,7 @@ router.post("/login", login);
  *         description: return logged in user
  */
 router.get("/", session_Check);
-router.get("/users", getUsers);
+// router.get("/users", getUsers);
 router.post("/refresh", refresh);
 router.post("/reset-password", updatePassword);
 /**
@@ -53,9 +53,9 @@ router.post("/reset-password", updatePassword);
  *       404:
  *         description: User not found
  */
-router.post("/activate-user", activateuser);
-router.post("/verify-otp", verifyuser);
-router.post("/request-otp", requestToken);
+// router.post("/activate-user", activateuser);
+// router.post("/verify-otp", verifyuser);
+// router.post("/request-otp", requestToken);
 router.post("/logout", logout);
 
 
