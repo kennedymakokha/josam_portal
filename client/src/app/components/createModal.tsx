@@ -35,9 +35,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
     editMode = false,
     newService,
     refetch,
-    setNewService,
     onClose,
-    onSave,
 }) => {
     const [localService, setLocalService] = useState<ServiceData>(newService);
 
@@ -82,7 +80,7 @@ const ServiceFormModal: React.FC<ServiceFormModalProps> = ({
         setLocalService({ ...localService, inputs: updated });
     };
     const [updateService] = useUpdateServiceMutation()
-    const [submitService, isLoading] = useRegisterServiceMutation()
+    const [submitService] = useRegisterServiceMutation()
     const handleSave = async () => {
         if (!localService.name.trim()) {
             return alert('Service name is required.');

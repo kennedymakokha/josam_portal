@@ -9,6 +9,7 @@ import bcrypt from "bcryptjs";
 import generateTokens from "../utils/generatetoken.util";
 import { parse } from "cookie";
 import jwtDecode from "jwt-decode";  // Fixed import here
+
 import { MakeActivationCode } from "../utils/generate_activation.util";
 
 // User Registration

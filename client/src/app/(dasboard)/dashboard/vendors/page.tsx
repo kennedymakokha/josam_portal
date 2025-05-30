@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react';
-import { useDeleteServiceMutation, useGetServicesQuery, useRegisterServiceMutation, useToggleactiveServiceMutation } from '../../../../../store/features/serviceApi';
+import { useDeleteServiceMutation, useGetServicesQuery, useToggleactiveServiceMutation } from '../../../../../store/features/serviceApi';
 
 interface Service {
+    _id?: string; // Add the missing _id property
     name: string;
     inputs: any[];
     apiEndpoint: string;
@@ -10,17 +11,16 @@ interface Service {
     active?: boolean;
 }
 
-interface ServicesResponse {
-    services: Service[];
-}
+
 import ServiceFormModal from '@/app/components/createModal';
 import PreviewModal from '@/app/components/previewModal';
 import ConfirmActionModal from '@/app/components/confirmactionModal';
+import Image from 'next/image';
 
 export default function ServiceTable() {
     const [submit] = useToggleactiveServiceMutation();
     const [deleteService] = useDeleteServiceMutation();
-    const { data, isSuccess, isLoading, refetch } = useGetServicesQuery(undefined, {
+    const { data, refetch } = useGetServicesQuery(undefined, {
         selectFromResult: (result) => ({
             data: result.data as { services: Service[] } | undefined,
             isSuccess: result.isSuccess,
@@ -49,7 +49,7 @@ export default function ServiceTable() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleDelete = (option: any) => {
+    const handleDelete = (option: Service) => {
         setConfirmTitle(`Delete ${option.name}?`);
         setConfirmDescription('This action cannot be undone.');
         setConfirmDanger(true);
@@ -66,7 +66,7 @@ export default function ServiceTable() {
         });
         setShowConfirmModal(true);
     };
-    const handleToggleStatus = (option: any) => {
+    const handleToggleStatus = (option: Service) => {
         const action = option.active ? 'Deactivate' : 'Activate';
 
         // Set up the confirmation modal text
@@ -92,7 +92,7 @@ export default function ServiceTable() {
 
 
 
-    const handleEdit = (option: any) => {
+    const handleEdit = (option: Service) => {
         setEditMode(true);
         setNewService(option);
         setShowCreateModal(true);
@@ -126,7 +126,7 @@ export default function ServiceTable() {
                 </button>
             </div>
 
-            {parsedServices.map((option: any) => (
+            {parsedServices.map((option: Service) => (
                 <div key={option.name} className="bg-white rounded-lg shadow-md p-6 mb-6">
                     <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-bold">{option.name} Services</h2>
@@ -175,10 +175,10 @@ export default function ServiceTable() {
                                 {option.image ? (
                                     typeof option.image === 'string' ? (
                                         // If it's a URL string (e.g., from backend)
-                                        <img src={option.image} alt="Service" className="w-32 h-32 object-cover rounded border" />
+                                        <Image width={100} height={100} src={option.image} alt="Service" className="w-32 h-32 object-cover rounded border" />
                                     ) : (
                                         // If it's a File object (local preview)
-                                        <img src={URL.createObjectURL(option.image)} alt="Preview" className="w-32 h-32 object-cover rounded border" />
+                                        <Image height={1000} width={100} src={URL.createObjectURL(option.image)} alt="Preview" className="w-32 h-32 object-cover rounded border" />
                                     )
                                 ) : (
                                     <span className="text-gray-400 italic">No image provided</span>
@@ -206,7 +206,7 @@ export default function ServiceTable() {
                                             <td className="px-4 py-2">
                                                 {(input.type === 'selectbox' || input.type === 'radio') && input.options?.length ? (
                                                     <ul className="list-disc pl-5">
-                                                        {input.options.map((opt: any, i: number) => (
+                                                        {input.options.map((opt: { label: string; value: string }, i: number) => (
                                                             <li key={i}>
                                                                 {opt.label || <em className="text-gray-400">No Label</em>}{' '}
                                                                 <span className="text-gray-500">({opt.value || 'No Value'})</span>
