@@ -81,51 +81,51 @@ export const updatePassword = async (req: Request, res: Response) => {
 
 // Other handlers unchanged except for minor fixes...
 
-// export const login = async (req: Request, res: Response) => {
-//     try {
-//         if (req.method !== "POST") {
-//             res.status(405).json("Method Not Allowed");
-//             return;
-//         }
-//         const { phone_number, password } = req.body;
-//         let phone = await Format_phone_number(phone_number); // format the phone number
+export const login = async (req: Request, res: Response) => {
+    try {
+        if (req.method !== "POST") {
+            res.status(405).json("Method Not Allowed");
+            return;
+        }
+        const { phone_number, password } = req.body;
+        let phone = await Format_phone_number(phone_number); // format the phone number
 
-//         const userExists: any = await User.findOne({
-//             $or: [
-//                 { username: phone_number },
-//                 { phone_number: phone }
-//             ]
-//         }).select("phone_number username role activated password");
+        const userExists: any = await User.findOne({
+            $or: [
+                { username: phone_number },
+                { phone_number: phone }
+            ]
+        }).select("phone_number username role activated password");
 
-//         if (!userExists) {
-//             res.status(400).json("User Not Found");
-//             return;
-//         }
+        if (!userExists) {
+            res.status(400).json("User Not Found");
+            return;
+        }
 
-//         if (!(await bcrypt.compare(password, userExists.password))) {
-//             res.status(401).json("Invalid credentials");
-//             return;
-//         } else {
-//             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
+        if (!(await bcrypt.compare(password, userExists.password))) {
+            res.status(401).json("Invalid credentials");
+            return;
+        } else {
+            const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
             
-//             const decoded = jwt_decode(accessToken);
-//             res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
-//                 httpOnly: true,  // Recommended to be true for security
-//                 secure: process.env.NODE_ENV === "production",
-//                 sameSite: "lax",
-//                 path: "/",
-//                 maxAge: 3600,
-//             }));
+            const decoded = jwt_decode(accessToken);
+            res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
+                httpOnly: true,  // Recommended to be true for security
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                maxAge: 3600,
+            }));
 
-//             res.status(200).json({ ok: true, message: "Logged in", token: accessToken, exp: decoded?.exp, user: userExists });
-//             return;
-//         }
+            res.status(200).json({ ok: true, message: "Logged in", token: accessToken, exp: decoded?.exp, user: userExists });
+            return;
+        }
 
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({ message: "Server error" });
-//     }
-// };
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 
 
