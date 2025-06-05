@@ -37,11 +37,8 @@ const httpServer = createServer(app);
 const allowedOrigins = [
   'http://localhost:9000',
   'http://localhost:3000',
-  'https://marapesa.com',
-  'https://smartshop-api.marapesa.com',
-  'https://a027-41-90-188-43.ngrok-free.app',
-  'http://185.113.249.137:3000',
-  'https://api.marapesa.com',
+  'https://app.kersacco.co.ke',
+  
 ];
 
 const io = new IOServer(httpServer, {
