@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface UserPayload {
-    _id: string;
+    _id?: string;
     username: string;
     role: string;
-    name: string;
+    name?: string;
 }
 
 const generateTokens = (user: UserPayload, accessExpiry: string) => {

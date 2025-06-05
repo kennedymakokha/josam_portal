@@ -14,7 +14,7 @@ import multer from 'multer';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import next from 'next';
+
 import path from 'path';
 import fs from 'fs';
 
@@ -28,9 +28,6 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
-// Next.js setup
-const nextApp = next({ dev, dir: './client' });
-const handle = nextApp.getRequestHandler();
 
 // Express + HTTP Server
 const app = express();
@@ -39,6 +36,7 @@ const httpServer = createServer(app);
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:9000',
+  'http://localhost:3000',
   'https://marapesa.com',
   'https://smartshop-api.marapesa.com',
   'https://a027-41-90-188-43.ngrok-free.app',
@@ -63,17 +61,13 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static(uploadDir));
 
 // Routes
-nextApp.prepare().then(() => {
+
   connectDB();
 
-  app.use('/api/auth', authRoutes);
+  // app.use('/api/auth', authRoutes);
   app.use('/api/services', serviceRoutes);
 
-  // All other requests handled by Next.js
-  app.all('*', (req: Request, res: Response) => {
-    return handle(req, res);
-  });
-
+ 
   // Start server
   httpServer.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
@@ -81,4 +75,4 @@ nextApp.prepare().then(() => {
 
   // Setup WebSocket
   setupSocket(io);
-});
+
