@@ -118,6 +118,6 @@
 , "types/jsonwebtoken.d.ts"  ],
   "exclude": [
     "node_modules",
-    "client",
+  
   ]
 }

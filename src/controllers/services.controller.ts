@@ -14,7 +14,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
             return;
         }
 
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
+        const imageUrl = `https://${req.get("host")}/uploads/${file.filename}`;
 
 
 

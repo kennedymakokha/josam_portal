@@ -37,7 +37,7 @@ const httpServer = createServer(app);
 const allowedOrigins = [
   'http://localhost:9000',
   'http://localhost:3000',
-  'https://app.kersacco.co.ke',
+  'https://app.kersacco.co.ke'
   
 ];
 
