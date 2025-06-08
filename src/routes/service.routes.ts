@@ -6,7 +6,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 
 // Ensure upload directory exists
-const uploadDir = path.join(__dirname, "../../public/uploads");
+const uploadDir = path.join(__dirname, "../../uploads");
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
