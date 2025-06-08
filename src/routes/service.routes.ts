@@ -18,8 +18,11 @@ const storage = multer.diskStorage({
       cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-      cb(null, uuidv4() + '-' + file.originalname);
-    },
+      const ext = path.extname(file.originalname); // Get file extension
+      const base = path.basename(file.originalname, ext); // Remove extension
+      const sanitizedBase = base.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, ''); // Remove special characters
+      cb(null, `${uuidv4()}-${sanitizedBase}${ext}`);
+    }
   })
 
 const upload = multer({ storage });
