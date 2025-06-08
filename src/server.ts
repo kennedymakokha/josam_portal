@@ -21,13 +21,6 @@ import fs from 'fs';
 // Environment
 const dev = process.env.NODE_ENV !== 'production';
 const PORT = Number(process.env.PORT) || 5000;
-// const uploadDir = path.join(__dirname, '../uploads');
-
-// // Ensure uploads folder exists
-// if (!fs.existsSync(uploadDir)) {
-//   fs.mkdirSync(uploadDir);
-// }
-
 
 // Express + HTTP Server
 const app = express();
