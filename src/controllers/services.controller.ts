@@ -13,12 +13,8 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
             res.status(400).json({ message: "No image uploaded." });
             return;
         }
-
-        const imageUrl = `https://${req.get("host")}/uploads/${file.filename}`;
-
-
-
-
+        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
+        // const imageUrl = `https://${req.get("host")}/uploads/${file.filename}`;
         req.body.image = imageUrl; // use `image` instead of `images` for single file
         // req.body.createdBy = req.user.userId;
 
