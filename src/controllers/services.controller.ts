@@ -12,8 +12,8 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
             res.status(400).json({ message: "No image uploaded." });
             return;
         }
-        const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
-        console.log(req.protocol)
+        const imageUrl = `${req.protocol}://${req.get("host")}/api/uploads/${file.filename}`;
+      
        
         req.body.image = imageUrl
         // req.body.createdBy = req.user.userId;
