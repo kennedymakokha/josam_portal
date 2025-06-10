@@ -5,6 +5,7 @@ import { Service } from "../models/Service.model";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     try {
+        console.log("firstv hgfghfghfh")
         // const validationResult = await CustomError(validateProductInput, req.body, res)
 
         const file = req.file as Express.Multer.File;

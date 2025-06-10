@@ -21,7 +21,7 @@ const PORT = Number(process.env.PORT) || 5000;
 // Express + HTTP Server
 const app = express();
 const httpServer = createServer(app);
-
+app.set('trust proxy', true);
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:9000',
