@@ -5,19 +5,17 @@ import { Service } from "../models/Service.model";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     try {
-        console.log("firstv hgfghfghfh")
-        // const validationResult = await CustomError(validateProductInput, req.body, res)
-
+       
         const file = req.file as Express.Multer.File;
-        console.log("first")
+  
         if (!file) {
             res.status(400).json({ message: "No image uploaded." });
             return;
         }
         const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${file.filename}`;
         console.log(req.protocol)
-        // const imageUrl = `https://${req.get("host")}/uploads/${file.filename}`;
-        req.body.image = imageUrl; // use `image` instead of `images` for single file
+       
+        req.body.image = imageUrl
         // req.body.createdBy = req.user.userId;
 
         const newProduct = new Service(req.body);
