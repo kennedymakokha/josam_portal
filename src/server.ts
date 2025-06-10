@@ -1,22 +1,18 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Request, Response } from 'express';
+import express, { Response } from 'express';
 import { createServer } from 'http';
 import { Server as IOServer } from 'socket.io';
 import { setupSocket } from './config/socket';
 import { connectDB } from './config/db';
-import authRoutes from './routes/auth.routes';
 import serviceRoutes from './routes/service.routes';
-import { authenticateToken } from './middleware/auth.middleware';
 
-import multer from 'multer';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import path from 'path';
-import fs from 'fs';
 
 // Environment
 const dev = process.env.NODE_ENV !== 'production';
@@ -30,7 +26,7 @@ const httpServer = createServer(app);
 const allowedOrigins = [
   'http://localhost:9000',
   'http://localhost:3000',
-  'https://app.kersacco.co.ke'
+  'https://formbuilder.mtandao.app'
   
 ];
 
