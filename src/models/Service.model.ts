@@ -6,10 +6,14 @@ const ServiceSchema = new mongoose.Schema({
   image: { type: String, },
   inputs: { type: Array, },
   active: { type: Boolean, default: true },
-  // createdBy: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'user_tb'
-  // },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user_tb'
+  },
+  ownedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user_tb'
+  },
 
   deletedAt: { type: Date, default: null }
 }, { timestamps: true });

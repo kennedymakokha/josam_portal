@@ -3,24 +3,30 @@ import { User } from "../models/user.model";
 
 import { Format_phone_number } from "../utils/simplefunctions.util";
 import jwt from "jsonwebtoken";
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 import { serialize } from "cookie";
 import bcrypt from "bcryptjs";
 import generateTokens from "../utils/generatetoken.util";
 import { parse } from "cookie";
 // import jwtDecode from "jwt-decode";  // Fixed import here
-
+interface DecodedToken {
+    exp: number;
+    iat: number;
+    // other custom claims...
+}
 import { MakeActivationCode } from "../utils/generate_activation.util";
+import { isNumber } from "../utils/isEmpty";
 
 // User Registration
 export const register = async (req: Request, res: Response) => {
     try {
-        const { username, password, phone_number } = req.body;
+        const { name, password, phone_number,email } = req.body;
 
         let phone = await Format_phone_number(phone_number); // format the phone number
         const userExists: any = await User.findOne({
             $or: [
-                { username: phone_number },
+                { email: email },
                 { phone_number: phone }
             ],
         });
@@ -32,13 +38,12 @@ export const register = async (req: Request, res: Response) => {
 
         let activationcode = MakeActivationCode(4);
 
-        // Hash password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         const userData = {
-            ...req.body,
-            password: hashedPassword,
+            name,
+            email,
             phone_number: phone,
+            password,
             activationCode: activationcode,
         };
 
@@ -82,51 +87,110 @@ export const updatePassword = async (req: Request, res: Response) => {
 // Other handlers unchanged except for minor fixes...
 
 export const login = async (req: Request, res: Response) => {
+
     try {
         if (req.method !== "POST") {
             res.status(405).json("Method Not Allowed");
             return;
         }
-        const { phone_number, password } = req.body;
-        let phone = await Format_phone_number(phone_number); // format the phone number
+        const { identifier, password } = req.body;
+        let phone
+        if (isNumber(identifier)) {
+            phone = await Format_phone_number(identifier);
+        }
+        // format the phone number
 
         const userExists: any = await User.findOne({
             $or: [
-                { username: phone_number },
+                { email: identifier },
                 { phone_number: phone }
             ]
-        }).select("phone_number username role activated password");
+        }).select("phone_number username role activated +password");
 
         if (!userExists) {
             res.status(400).json("User Not Found");
             return;
         }
-
+       
         if (!(await bcrypt.compare(password, userExists.password))) {
             res.status(401).json("Invalid credentials");
             return;
         } else {
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
-            
-            const decoded = jwt_decode(accessToken);
-            res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
-                httpOnly: true,  // Recommended to be true for security
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-                path: "/",
-                maxAge: 3600,
-            }));
 
-            res.status(200).json({ ok: true, message: "Logged in", token: accessToken, exp: decoded?.exp, user: userExists });
+            // const decoded = jwtDecode<DecodedToken>(accessToken);
+            // res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
+            //     httpOnly: true,  // Recommended to be true for security
+            //     secure: process.env.NODE_ENV === "production",
+            //     sameSite: "lax",
+            //     path: "/",
+            //     maxAge: 3600,
+            // }));
+
+            res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
             return;
         }
 
     } catch (error) {
-        console.log(error);
+       
         res.status(500).json({ message: "Server error" });
     }
 };
+// export const login = async (req: Request, res: Response) => {
+//     try {
+//       if (req.method !== "POST") {
+//         return res.status(405).json("Method Not Allowed");
+//       }
 
+//       const { identifier, password } = req.body;
+//       if (!identifier || !password) {
+//         return res.status(400).json("Identifier and password are required");
+//       }
+
+//       let query: any = {};
+//       if (isNumber(identifier)) {
+//         const formattedPhone = await Format_phone_number(identifier);
+//         query.phone_number = formattedPhone;
+//       } else {
+//         query.email = identifier;
+//       }
+
+//       const user: any = await User.findOne(query).select("phone_number username role activated password email");
+
+//       if (!user) {
+//         return res.status(400).json("User Not Found");
+//       }
+
+//       const validPassword = await bcrypt.compare(password, user.password);
+//       if (!validPassword) {
+//         return res.status(401).json("Invalid credentials");
+//       }
+
+//       const { accessToken, refreshToken } = generateTokens(user, "2hrs");
+
+//       // Optional: set cookie if needed
+//       /*
+//       res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
+//         httpOnly: true,
+//         secure: process.env.NODE_ENV === "production",
+//         sameSite: "lax",
+//         path: "/",
+//         maxAge: 3600,
+//       }));
+//       */
+
+//       return res.status(200).json({
+//         ok: true,
+//         message: "Logged in",
+//         token: accessToken,
+//         user,
+//       });
+
+//     } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ message: "Server error" });
+//     }
+//   };
 
 
 

@@ -5,19 +5,19 @@ import { Service } from "../models/Service.model";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     try {
-       
+
         const file = req.file as Express.Multer.File;
-  
+
         if (!file) {
             res.status(400).json({ message: "No image uploaded." });
             return;
         }
-        const imageUrl = `${req.protocol}://${req.get("host")}/api/uploads/${file.filename}`;
-      
-       
-        req.body.image = imageUrl
-        // req.body.createdBy = req.user.userId;
+        const imageUrl = `https://form-builder.mtandao.app/api/uploads/${file.filename}`;
 
+
+        req.body.image = imageUrl
+        req.body.createdBy = req.user.userId;
+        req.body.ownedBy = req.user.userId;
         const newProduct = new Service(req.body);
         await newProduct.save();
 
@@ -33,11 +33,13 @@ export const Get = async (req: Request | any, res: Response | any) => {
 
     try {
         let options: any = { deletedAt: null, }
-        // if (req.user.role == "admin") {
-        //     options = { deletedAt: null, createdBy: req.user.userId }
-        // }
+        if (req.user.role == "admin") {
+            options = { deletedAt: null, ownedBy: req.user.userId }
+        } else {
+            options = { deletedAt: null, createdBy: req.user.userId }
+        }
         const { page = 1, limit = 10, } = req.query;
-        const services: any = await Service.find({ deletedAt: null, }).skip((page - 1) * limit)
+        const services: any = await Service.find(options).skip((page - 1) * limit)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 })
         const total = await Service.countDocuments();

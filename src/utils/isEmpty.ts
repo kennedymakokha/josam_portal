@@ -7,3 +7,7 @@ export function isEmpty(obj: any) {
 
     return true;
 }
+
+export function isNumber(str: any) {
+    return !isNaN(str) && !isNaN(parseFloat(str));
+}
