@@ -4,6 +4,7 @@ const UserSchema = new mongoose.Schema({
   phone_number: { type: String, required: true, unique: true },
   name: { type: String, },
   email: { type: String, },
+  secret_key: { type: String, },
   activationCode: { type: String, },
   role: {
     type: String,

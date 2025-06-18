@@ -21,7 +21,7 @@ import { isNumber } from "../utils/isEmpty";
 // User Registration
 export const register = async (req: Request, res: Response) => {
     try {
-        const { name, password, phone_number,email } = req.body;
+        const { name, password, phone_number, email } = req.body;
 
         let phone = await Format_phone_number(phone_number); // format the phone number
         const userExists: any = await User.findOne({
@@ -83,6 +83,25 @@ export const updatePassword = async (req: Request, res: Response) => {
         return;
     }
 };
+export const updateKey = async (req: Request | any, res: Response | any) => {
+    try {
+
+        const user: any = await User.findOne({ _id: req.user.userId });
+        if (!user) {
+            res.status(400).json("User not found");
+            return;
+        }
+        user.secret_key = req.body.secret_key
+        await user.save();
+
+        res.status(200).json({ success: true, message: "Key added successfully" });
+        return;
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error", error });
+        return;
+    }
+};
 
 // Other handlers unchanged except for minor fixes...
 
@@ -105,13 +124,13 @@ export const login = async (req: Request, res: Response) => {
                 { email: identifier },
                 { phone_number: phone }
             ]
-        }).select("phone_number username role activated +password");
+        }).select("phone_number name role email activated +password");
 
         if (!userExists) {
             res.status(400).json("User Not Found");
             return;
         }
-       
+
         if (!(await bcrypt.compare(password, userExists.password))) {
             res.status(401).json("Invalid credentials");
             return;
@@ -132,7 +151,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-       
+
         res.status(500).json({ message: "Server error" });
     }
 };

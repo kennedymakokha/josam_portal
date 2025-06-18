@@ -54,7 +54,7 @@ app.use('/api/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 connectDB();
 
 app.use('/api/auth', authRoutes);
-app.use('/api/services', authenticateToken, serviceRoutes);
+app.use('/api/services', serviceRoutes);
 
 
 // Start server

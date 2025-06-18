@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 
 import { Service } from "../models/Service.model";
+import { User } from "../models/user.model";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     try {
@@ -40,6 +41,30 @@ export const Get = async (req: Request | any, res: Response | any) => {
         }
         const { page = 1, limit = 10, } = req.query;
         const services: any = await Service.find(options).skip((page - 1) * limit)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 })
+        const total = await Service.countDocuments();
+        res.status(201).json(
+            {
+                services, page: parseInt(page),
+                totalPages: Math.ceil(total / limit)
+            }
+        );
+        return;
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ ok: false, message: "Server error", error });
+        return;
+
+    }
+};
+export const GetBykey = async (req: Request | any, res: Response | any) => {
+
+    try {
+       
+        const user: any = await User.findOne({ secret_key: req.query.secret_key })
+        const { page = 1, limit = 10, } = req.query;
+        const services: any = await Service.find({ deletedAt: null, ownedBy: user._id }).skip((page - 1) * limit)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 })
         const total = await Service.countDocuments();
