@@ -61,8 +61,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const GetBykey = async (req: Request | any, res: Response | any) => {
 
     try {
-       
-        const user: any = await User.findOne({ secret_key: req.query.secret_key })
+        const user: any = await User.findOne({ secret_key:"El3aYh3tRjv+?kUjU_(04KeBKfrzf0Jr"})
         const { page = 1, limit = 10, } = req.query;
         const services: any = await Service.find({ deletedAt: null, ownedBy: user._id }).skip((page - 1) * limit)
             .limit(parseInt(limit))
