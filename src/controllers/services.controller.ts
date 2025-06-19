@@ -3,25 +3,23 @@ import { Request, Response } from "express";
 
 import { Service } from "../models/Service.model";
 import { User } from "../models/user.model";
+import { getSocketIo } from "../config/socket";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     try {
 
         const file = req.file as Express.Multer.File;
-
-        if (!file) {
-            res.status(400).json({ message: "No image uploaded." });
-            return;
+        let imageUrl = ``;
+        if (file) {
+            imageUrl = `https://form-builder.mtandao.app/api/uploads/${file.filename}`
         }
-        const imageUrl = `https://form-builder.mtandao.app/api/uploads/${file.filename}`;
-
-
         req.body.image = imageUrl
         req.body.createdBy = req.user.userId;
         req.body.ownedBy = req.user.userId;
         const newProduct = new Service(req.body);
         await newProduct.save();
-
+        let io = getSocketIo()
+        io.to('admin123').emit('new-service');
         res.status(201).json({ message: "Product added successfully", newProduct });
     } catch (error) {
         console.error(error);
@@ -61,7 +59,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const GetBykey = async (req: Request | any, res: Response | any) => {
 
     try {
-        const user: any = await User.findOne({ secret_key:"El3aYh3tRjv+?kUjU_(04KeBKfrzf0Jr"})
+        const user: any = await User.findOne({ secret_key: "El3aYh3tRjv+?kUjU_(04KeBKfrzf0Jr" })
         const { page = 1, limit = 10, } = req.query;
         const services: any = await Service.find({ deletedAt: null, ownedBy: user._id }).skip((page - 1) * limit)
             .limit(parseInt(limit))

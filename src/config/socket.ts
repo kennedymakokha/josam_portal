@@ -11,23 +11,30 @@ export const setupSocket = (socketInstance: any) => {
     io.on("connection", (socket: any) => {
         console.log("SOCKET CONNECTION MADE:", socket.id);
        
+        const { adminId } = socket.handshake.query;
 
-        socket.on('join_topic', (topic: any) => {
-            socket.join(topic);
-            console.log(`User ${socket.id} joined topic: ${topic}`);
+        if (adminId) {
+          // Join a room named after the admin
+          socket.join(adminId);
+          console.log(`User joined room for admin: ${adminId}`);
+        }
+      
+        // socket.on('join_topic', (topic: any) => {
+        //     socket.join(topic);
+        //     console.log(`User ${socket.id} joined topic: ${topic}`);
 
-            // Optional: Notify others in the room
-            socket.to(topic).emit('user_joined', {
-                message: `User ${socket.id} has joined the topic ${topic}`,
-            });
-        });
+        //     // Optional: Notify others in the room
+        //     socket.to(topic).emit('user_joined', {
+        //         message: `User ${socket.id} has joined the topic ${topic}`,
+        //     });
+        // });
 
-        socket.on('send_message', ({ topic, message }: any) => {
-            io.to(topic).emit('receive_message', {
-                sender: socket.id,
-                message,
-            });
-        });
+        // socket.on('send_message', ({ topic, message }: any) => {
+        //     io.to(topic).emit('receive_message', {
+        //         sender: socket.id,
+        //         message,
+        //     });
+        // });
 
         socket.on("disconnect", () => {
             console.log("Disconnected from server");
