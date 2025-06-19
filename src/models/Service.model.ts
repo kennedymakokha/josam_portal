@@ -10,6 +10,11 @@ const ServiceSchema = new mongoose.Schema({
   inputs: { type: Array },
   formId: { type: Number, unique: true }, // Important: must be unique
   active: { type: Boolean, default: true },
+  category: {
+    type: String,
+    enum: ["service", "loan"],
+    default: "service"
+  },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'user_tb'

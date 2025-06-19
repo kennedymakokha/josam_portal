@@ -6,6 +6,7 @@ import { User } from "../models/user.model";
 import { getSocketIo } from "../config/socket";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
+   
     try {
 
         const file = req.file as Express.Multer.File;
@@ -17,6 +18,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         req.body.createdBy = req.user.userId;
         req.body.ownedBy = req.user.userId;
         const newProduct = new Service(req.body);
+     
         await newProduct.save();
         let io = getSocketIo()
         io.to('admin123').emit('new-service');
@@ -59,9 +61,10 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const GetBykey = async (req: Request | any, res: Response | any) => {
 
     try {
-        const user: any = await User.findOne({ secret_key: "El3aYh3tRjv+?kUjU_(04KeBKfrzf0Jr" })
-        const { page = 1, limit = 10, } = req.query;
-        const services: any = await Service.find({ deletedAt: null, ownedBy: user._id }).skip((page - 1) * limit)
+        console.log(req.query)
+        const { page = 1, limit = 10, category, secret_key } = req.query;
+        const user: any = await User.findOne({ secret_key: secret_key })
+        const services: any = await Service.find({ deletedAt: null, ownedBy: user._id, category: category ? category : "service" }).skip((page - 1) * limit)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 })
         const total = await Service.countDocuments();
