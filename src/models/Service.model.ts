@@ -6,6 +6,7 @@ import { Counter } from './counter';
 const ServiceSchema = new mongoose.Schema({
   name: { type: String },
   apiEndpoint: { type: String },
+  loanDetails: { type: String },
   image: { type: String },
   inputs: { type: Array },
   formId: { type: Number, unique: true }, // Important: must be unique
