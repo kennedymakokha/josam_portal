@@ -8,7 +8,7 @@ import { getSocketIo } from "../config/socket";
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
 
     try {
-     
+
         const file = req.file as Express.Multer.File;
         let imageUrl = ``;
         if (file) {
@@ -61,10 +61,10 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const GetBykey = async (req: Request | any, res: Response | any) => {
 
     try {
-      
+
         const { page = 1, limit = 10, category, secret_key } = req.query;
         const user: any = await User.findOne({ secret_key: secret_key })
-        const services: any = await Service.find({ deletedAt: null, ownedBy: user._id, category }).skip((page - 1) * limit)
+        const services: any = await Service.find({ active: true, deletedAt: null, ownedBy: user._id, category }).skip((page - 1) * limit)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 })
         const total = await Service.countDocuments();
@@ -101,8 +101,11 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
 
 export const Update = async (req: Request | any, res: Response | any) => {
     try {
+     
         let updates: any = await Service.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         res.status(200).json(updates._id)
+        let io = getSocketIo()
+        io.to('admin123').emit('new-service');
         return
     } catch (error) {
         console.log(error)
@@ -133,9 +136,9 @@ export const togglectivate = async (req: Request | any, res: Response | any) => 
 
         // Toggle the active state
         service.active = !service.active;
-
         const updated = await service.save();
-
+        let io = getSocketIo()
+        io.to('admin123').emit('new-service');
         res.status(200).json({
             message: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`,
             updated,
@@ -153,6 +156,8 @@ export const Delete = async (req: Request | any, res: Response | any) => {
         if (!deleted) {
             return res.status(404).json({ message: 'Service not found' });
         }
+        let io = getSocketIo()
+        io.to('admin123').emit('new-service');
         res.status(200).json({ message: 'Service deleted successfully', deleted });
     } catch (error) {
         console.error('Deletion Error:', error);
