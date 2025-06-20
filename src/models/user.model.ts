@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, },
   email: { type: String, },
   secret_key: { type: String, },
-  fcm_token: { type: String, },
+  fcm_token: { type: Array },
   activationCode: { type: String, },
   role: {
     type: String,
@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     default: "admin"
   },
   activated: { type: Boolean, default: true },
-  password: { type: String, required: true,select: false  },
+  password: { type: String, required: true, select: false },
 }, { timestamps: true });
 
 UserSchema.pre("save", async function (next) {

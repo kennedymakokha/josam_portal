@@ -17,6 +17,7 @@ interface DecodedToken {
 }
 import { MakeActivationCode } from "../utils/generate_activation.util";
 import { isNumber } from "../utils/isEmpty";
+import { subscribeToRoom } from "../utils/sendNotifications";
 
 // User Registration
 export const register = async (req: Request, res: Response) => {
@@ -108,7 +109,7 @@ export const updateKey = async (req: Request | any, res: Response | any) => {
 export const login = async (req: Request, res: Response) => {
 
     try {
-        console.log(req.body)
+
         if (req.method !== "POST") {
             res.status(405).json("Method Not Allowed");
             return;
@@ -127,6 +128,9 @@ export const login = async (req: Request, res: Response) => {
             ]
         }).select("phone_number name role email activated +password");
 
+        let prevTokens = userExists.fcm_token
+        let NewTokens = req.body.fcm_token ? prevTokens.push(req.body.fcm_token) : prevTokens;
+
         if (!userExists) {
             res.status(400).json("User Not Found");
             return;
@@ -137,13 +141,13 @@ export const login = async (req: Request, res: Response) => {
             return;
         } else {
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
-            let updates: any = await User.findOneAndUpdate({
+            await User.findOneAndUpdate({
                 $or: [
                     { email: identifier },
                     { phone_number: phone }
                 ]
-            }, { fcm_token: req.body.fcm_token }, { new: true, useFindAndModify: false })
-
+            }, { fcm_token: NewTokens }, { new: true, useFindAndModify: false })
+            // subscribeToRoom({ roomId: "test_room", tokens: NewTokens });
             // const decoded = jwtDecode<DecodedToken>(accessToken);
             // res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
             //     httpOnly: true,  // Recommended to be true for security

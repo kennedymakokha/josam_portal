@@ -14,7 +14,12 @@ import cors from 'cors';
 
 import path from 'path';
 import { authenticateToken } from './middleware/auth.middleware';
-
+import * as admin from 'firebase-admin';
+// import serviceAccount from '../firebase-adminsdk.json';
+const serviceAccount = require('../firebase-adminsdk.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+});
 // Environment
 const dev = process.env.NODE_ENV !== 'production';
 const PORT = Number(process.env.PORT) || 5000;

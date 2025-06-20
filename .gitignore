@@ -8,6 +8,8 @@
 /uploads
 /.pnp
 .pnp.js
+firebase-adminsdk.json
+
 
 # testing
 /coverage

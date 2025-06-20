@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { Service } from "../models/Service.model";
 import { User } from "../models/user.model";
 import { getSocketIo } from "../config/socket";
+import { sendNotificationToRoom, sendPushNotification } from "../utils/sendNotifications";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
 
@@ -101,7 +102,7 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
 
 export const Update = async (req: Request | any, res: Response | any) => {
     try {
-     
+
         let updates: any = await Service.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         res.status(200).json(updates._id)
         let io = getSocketIo()
@@ -139,6 +140,8 @@ export const togglectivate = async (req: Request | any, res: Response | any) => 
         const updated = await service.save();
         let io = getSocketIo()
         io.to('admin123').emit('new-service');
+        sendPushNotification({image:service.image, title: `${service.category} ${updated.active ? 'activation' : 'deactivation'}`, token: "fSUKQBQSTnOU6Vn7aygyPw:APA91bHFRWNbsOCj6Vdrri4QY-NBZz-H4ZhmzKVlJu6EoI9kYWP6nY2cgP9WI0MIOhn8FLmGjiMzLYg1CbMmpfdJbxHoeteJKCSieSu_xvf8ZMOQekgg09Y", text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}` })
+        sendNotificationToRoom({ roomId: "admin123", text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}` });
         res.status(200).json({
             message: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`,
             updated,
