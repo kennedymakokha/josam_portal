@@ -136,6 +136,12 @@ export const login = async (req: Request, res: Response) => {
             return;
         } else {
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
+            let updates: any = await User.findOneAndUpdate({
+                $or: [
+                    { email: identifier },
+                    { phone_number: phone }
+                ]
+            }, { fcm_token: req.body.fcm_token }, { new: true, useFindAndModify: false })
 
             // const decoded = jwtDecode<DecodedToken>(accessToken);
             // res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
