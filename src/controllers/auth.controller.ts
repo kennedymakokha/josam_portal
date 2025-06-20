@@ -108,6 +108,7 @@ export const updateKey = async (req: Request | any, res: Response | any) => {
 export const login = async (req: Request, res: Response) => {
 
     try {
+        console.log(req.body)
         if (req.method !== "POST") {
             res.status(405).json("Method Not Allowed");
             return;
@@ -157,7 +158,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-
+        console.log(error)
         res.status(500).json({ message: "Server error" });
     }
 };
