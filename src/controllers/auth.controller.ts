@@ -147,7 +147,7 @@ export const login = async (req: Request, res: Response) => {
                     { phone_number: phone }
                 ]
             }, { fcm_token: NewTokens }, { new: true, useFindAndModify: false })
-            // subscribeToRoom({ roomId: "test_room", tokens: NewTokens });
+            subscribeToRoom({ roomId: "test_room", tokens: NewTokens });
             // const decoded = jwtDecode<DecodedToken>(accessToken);
             // res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
             //     httpOnly: true,  // Recommended to be true for security
