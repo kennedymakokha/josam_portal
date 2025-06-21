@@ -10,6 +10,19 @@ export async function sendPushNotification({ image, token, text, title, }: { ima
         data: {
             imageUrl: image,
         },
+        android: {
+            priority: 'high',
+            notification: {
+                sound: 'default',
+            },
+        },
+        apns: {
+            payload: {
+                aps: {
+                    sound: 'default',
+                },
+            },
+        },
         token: token,
     };
 
@@ -24,11 +37,29 @@ export async function sendPushNotification({ image, token, text, title, }: { ima
 export async function sendNotificationToRoom({ roomId, text }: { roomId: string, text?: string }) {
     const topic = `room_${roomId}`;
     const message: admin.messaging.Message = {
+        topic,
         notification: {
             title: 'New Message',
             body: text || 'You have a new message in your room.',
         },
-        topic,
+        data: {
+            roomId,
+            type: 'chat_message',
+            text: text || '',
+        },
+        android: {
+            priority: 'high',
+            notification: {
+                sound: 'default',
+            },
+        },
+        apns: {
+            payload: {
+                aps: {
+                    sound: 'default',
+                },
+            },
+        },
     };
 
     try {
