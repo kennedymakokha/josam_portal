@@ -144,7 +144,7 @@ export const login = async (req: Request, res: Response) => {
             if (fcm_token && !updatedTokens.includes(fcm_token)) {
                 updatedTokens.push(fcm_token);
             }
-
+            console.log(updatedTokens)
             // Generate tokens
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
 

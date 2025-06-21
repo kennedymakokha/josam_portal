@@ -143,7 +143,7 @@ export const togglectivate = async (req: Request | any, res: Response | any) => 
         // sendPushNotification({
         //     image: service.image,
         //     title: `${service.category} ${updated.active ? 'activation' : 'deactivation'}`,
-        //     token: "fKf6rl9YQzOOHS_b4D3LZD:APA91bES8xmz0Oar5j5ry-SX8-eftNnMqco2wsXEo3_74GQzKpyOFCuH8klozUjl5JB8X9tmW_11SQauXHUQ25pPBCk-MghfQl1rhGTo7NlqHfjOBw32GVA",
+        //     token: "ews8oI0jSLeYwW6nDHnmrS:APA91bH2fhZP6DWn3Du-BsJoX2p7DkT0bmhwmiOk_euEwncjVf2n8Xt9Gmod1ju-FWkHTVgaphmEKtzHIk0sbI3DTz7G_v4VEHIUco0rC3vDVf7FWskd8TE",
         //     text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`
         // })
         sendNotificationToRoom({ roomId: "test_room", text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}` });
