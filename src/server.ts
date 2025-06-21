@@ -1,21 +1,20 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import express, { Response } from 'express';
+import express from 'express';
 import { createServer } from 'http';
 import { Server as IOServer } from 'socket.io';
 import { setupSocket } from './config/socket';
 import { connectDB } from './config/db';
 import serviceRoutes from './routes/service.routes';
+import postRoutes from './routes/post.routes';
 import authRoutes from './routes/auth.routes'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import path from 'path';
-import { authenticateToken } from './middleware/auth.middleware';
 import * as admin from 'firebase-admin';
-// import serviceAccount from '../firebase-adminsdk.json';
 const serviceAccount = require('../firebase-adminsdk.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
@@ -60,6 +59,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
+app.use('/api/posts', postRoutes);
 
 
 // Start server
