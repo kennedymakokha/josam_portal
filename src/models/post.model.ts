@@ -4,7 +4,10 @@ import mongoose, { Schema } from 'mongoose';
 const PostSchema = new mongoose.Schema({
 
   text: { type: String },
-  comments: { type: Array },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'tb_comments'
+  }],
   likes: [{
     type: Schema.Types.ObjectId,
     ref: 'user_tb'
