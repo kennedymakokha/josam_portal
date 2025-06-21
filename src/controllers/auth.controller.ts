@@ -126,7 +126,7 @@ export const login = async (req: Request, res: Response) => {
                 { email: identifier },
                 { phone_number: phone }
             ]
-        }).select("phone_number name role email activated +password");
+        }).select("phone_number name role email +password activated fcm_token");
 
         if (!userExists) {
             res.status(400).json("User Not Found");
@@ -137,26 +137,22 @@ export const login = async (req: Request, res: Response) => {
             res.status(401).json("Invalid credentials");
             return;
         } else {
-            // const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
 
-            // Handle FCM tokens
-            let updatedTokens = Array.isArray(userExists.fcm_token) ? [...userExists.fcm_token] : [];
-            if (fcm_token && !updatedTokens.includes(fcm_token)) {
-                updatedTokens.push(fcm_token);
+
+            const existingToken = userExists.fcm_token.find(
+                (token: string) => token === req.body.fcm_token,
+            );
+            if (fcm_token && !existingToken) {
+
+                userExists.fcm_token.push(fcm_token)
+                // Subscribe to room (optional logic)
+                subscribeToRoom({ roomId: "test_room", tokens: [fcm_token] });
             }
-            console.log(updatedTokens)
+            userExists.save()
             // Generate tokens
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
 
-            // Update user with new tokens
-            await User.findOneAndUpdate(
-                { _id: userExists._id },
-                { fcm_token: updatedTokens },
-                { new: true, useFindAndModify: false }
-            );
 
-            // Subscribe to room (optional logic)
-            subscribeToRoom({ roomId: "test_room", tokens: updatedTokens });
             res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
             return;
         }
@@ -168,17 +164,10 @@ export const login = async (req: Request, res: Response) => {
 };
 
 // session check
-export const session_Check = async (req: Request, res: Response) => {
-    const cookies = parse(req.headers.cookie || "");
-    const token = cookies.sessionToken;
-    if (!token) {
-        // NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        res.status(401).json({ message: "Unauthorized" })
-        return
-    };
+export const session_Check = async (req: Request | any, res: Response): Promise<void> => {
     try {
 
-        const user: any = jwt.verify(token, process.env.JWT_SECRET ? process.env.JWT_SECRET : "your_secret_key");
+        const user: any = await User.findById(req.user.userId)
         res.status(200).json(user);
         return
     } catch (error) {
@@ -207,15 +196,22 @@ export const refresh = async (req: Request, res: Response) => {
         return
     });
 };
-export const logout = async (req: Request, res: Response) => {
-    res.setHeader("Set-Cookie", serialize("sessionToken", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 0, // Expire immediately
-    }));
+export const logout = async (req: Request | any, res: Response): Promise<void> => {
+    console.log(req)
+    const user: any = await User.findById(req.user.userId);
+    if (!user) {
+        res.status(404).json({ message: 'User not found !' });
+        return;
+    }
+    if (req.body.fcm_token && user.fcm_token) {
+        // Remove the specific token
+        user.fcm_token.pull(req.body.fcm_token);
+        await user.save();
 
+        // Unsubscribe the token from all user-specific topics
+        // await unsubscribeUserFromTopics(user, req.body.fcmToken);
+        // console.log(`Token ${req.body.fcmToken} removed and unsubscribed.`);
+    }
     res.status(200).json({ message: "Logged out" });
     return
 };

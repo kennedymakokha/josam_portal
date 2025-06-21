@@ -7,7 +7,7 @@ router.post("/register", register);
 router.post("/update_key", authenticateToken, updateKey);
 router.post("/login", login);
 
-router.get("/", session_Check);
+router.get("/",authenticateToken, session_Check);
 // router.get("/users", getUsers);
 router.post("/refresh", refresh);
 router.post("/reset-password", updatePassword);
@@ -15,7 +15,7 @@ router.post("/reset-password", updatePassword);
 // router.post("/activate-user", activateuser);
 // router.post("/verify-otp", verifyuser);
 // router.post("/request-otp", requestToken);
-router.post("/logout", logout);
+router.post("/logout",authenticateToken, logout);
 
 
 

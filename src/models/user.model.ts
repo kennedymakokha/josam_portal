@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, },
   email: { type: String, },
   secret_key: { type: String, },
-  fcm_token: { type: Array },
+  fcm_token: [String],
   activationCode: { type: String, },
   role: {
     type: String,
