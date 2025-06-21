@@ -140,13 +140,13 @@ export const togglectivate = async (req: Request | any, res: Response | any) => 
         const updated = await service.save();
         let io = getSocketIo()
         io.to('admin123').emit('new-service');
-        sendPushNotification({
-            image: service.image,
-            title: `${service.category} ${updated.active ? 'activation' : 'deactivation'}`,
-            token: "fSUKQBQSTnOU6Vn7aygyPw:APA91bHFRWNbsOCj6Vdrri4QY-NBZz-H4ZhmzKVlJu6EoI9kYWP6nY2cgP9WI0MIOhn8FLmGjiMzLYg1CbMmpfdJbxHoeteJKCSieSu_xvf8ZMOQekgg09Y",
-            text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`
-        })
-        sendNotificationToRoom({ roomId: "admin123", text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}` });
+        // sendPushNotification({
+        //     image: service.image,
+        //     title: `${service.category} ${updated.active ? 'activation' : 'deactivation'}`,
+        //     token: "fKf6rl9YQzOOHS_b4D3LZD:APA91bES8xmz0Oar5j5ry-SX8-eftNnMqco2wsXEo3_74GQzKpyOFCuH8klozUjl5JB8X9tmW_11SQauXHUQ25pPBCk-MghfQl1rhGTo7NlqHfjOBw32GVA",
+        //     text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`
+        // })
+        sendNotificationToRoom({ roomId: "test_room", text: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}` });
         res.status(200).json({
             message: `${updated.name} is now ${updated.active ? 'active' : 'inactive'}`,
             updated,
