@@ -114,7 +114,7 @@ export const login = async (req: Request, res: Response) => {
             res.status(405).json("Method Not Allowed");
             return;
         }
-        const { identifier, password } = req.body;
+        const { identifier, password, fcm_token } = req.body;
         let phone
         if (isNumber(identifier)) {
             phone = await Format_phone_number(identifier);
@@ -128,9 +128,6 @@ export const login = async (req: Request, res: Response) => {
             ]
         }).select("phone_number name role email activated +password");
 
-        let prevTokens = userExists.fcm_token
-        let NewTokens = req.body.fcm_token ? prevTokens.push(req.body.fcm_token) : prevTokens;
-
         if (!userExists) {
             res.status(400).json("User Not Found");
             return;
@@ -140,23 +137,26 @@ export const login = async (req: Request, res: Response) => {
             res.status(401).json("Invalid credentials");
             return;
         } else {
-            const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
-            await User.findOneAndUpdate({
-                $or: [
-                    { email: identifier },
-                    { phone_number: phone }
-                ]
-            }, { fcm_token: NewTokens }, { new: true, useFindAndModify: false })
-            subscribeToRoom({ roomId: "test_room", tokens: NewTokens });
-            // const decoded = jwtDecode<DecodedToken>(accessToken);
-            // res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
-            //     httpOnly: true,  // Recommended to be true for security
-            //     secure: process.env.NODE_ENV === "production",
-            //     sameSite: "lax",
-            //     path: "/",
-            //     maxAge: 3600,
-            // }));
+            // const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
 
+            // Handle FCM tokens
+            let updatedTokens = Array.isArray(userExists.fcm_token) ? [...userExists.fcm_token] : [];
+            if (fcm_token && !updatedTokens.includes(fcm_token)) {
+                updatedTokens.push(fcm_token);
+            }
+
+            // Generate tokens
+            const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
+
+            // Update user with new tokens
+            await User.findOneAndUpdate(
+                { _id: userExists._id },
+                { fcm_token: updatedTokens },
+                { new: true, useFindAndModify: false }
+            );
+
+            // Subscribe to room (optional logic)
+            subscribeToRoom({ roomId: "test_room", tokens: updatedTokens });
             res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
             return;
         }
@@ -166,63 +166,6 @@ export const login = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error" });
     }
 };
-// export const login = async (req: Request, res: Response) => {
-//     try {
-//       if (req.method !== "POST") {
-//         return res.status(405).json("Method Not Allowed");
-//       }
-
-//       const { identifier, password } = req.body;
-//       if (!identifier || !password) {
-//         return res.status(400).json("Identifier and password are required");
-//       }
-
-//       let query: any = {};
-//       if (isNumber(identifier)) {
-//         const formattedPhone = await Format_phone_number(identifier);
-//         query.phone_number = formattedPhone;
-//       } else {
-//         query.email = identifier;
-//       }
-
-//       const user: any = await User.findOne(query).select("phone_number username role activated password email");
-
-//       if (!user) {
-//         return res.status(400).json("User Not Found");
-//       }
-
-//       const validPassword = await bcrypt.compare(password, user.password);
-//       if (!validPassword) {
-//         return res.status(401).json("Invalid credentials");
-//       }
-
-//       const { accessToken, refreshToken } = generateTokens(user, "2hrs");
-
-//       // Optional: set cookie if needed
-//       /*
-//       res.setHeader("Set-Cookie", serialize("sessionToken", accessToken, {
-//         httpOnly: true,
-//         secure: process.env.NODE_ENV === "production",
-//         sameSite: "lax",
-//         path: "/",
-//         maxAge: 3600,
-//       }));
-//       */
-
-//       return res.status(200).json({
-//         ok: true,
-//         message: "Logged in",
-//         token: accessToken,
-//         user,
-//       });
-
-//     } catch (error) {
-//       console.error(error);
-//       return res.status(500).json({ message: "Server error" });
-//     }
-//   };
-
-
 
 // session check
 export const session_Check = async (req: Request, res: Response) => {

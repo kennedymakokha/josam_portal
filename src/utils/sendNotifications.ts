@@ -40,7 +40,7 @@ export async function sendNotificationToRoom({ roomId, text }: { roomId: string,
 }
 
 
-export async function subscribeToRoom({ roomId, tokens }: { roomId: string, tokens: [] }) {
+export async function subscribeToRoom({ roomId, tokens }: { roomId: string, tokens: [] | any }) {
     admin.messaging().subscribeToTopic(tokens, roomId)
         .then(response => {
             console.log('Subscribed successfully:', response);
