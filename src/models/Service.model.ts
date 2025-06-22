@@ -20,6 +20,10 @@ const ServiceSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'user_tb'
   },
+  app_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'tb_apps'
+  },
   ownedBy: {
     type: Schema.Types.ObjectId,
     ref: 'user_tb'

@@ -5,6 +5,7 @@ import { Service } from "../models/Service.model";
 import { User } from "../models/user.model";
 import { getSocketIo } from "../config/socket";
 import { sendNotificationToRoom, sendPushNotification } from "../utils/sendNotifications";
+import { App_get } from "../utils/appGet";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
 
@@ -15,6 +16,9 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         if (file) {
             imageUrl = `https://form-builder.mtandao.app/api/uploads/${file.filename}`
         }
+        // let app_id = await App_get(app_name, req.user.userId)
+        req.body.app_id = await App_get(req.body.app_name, req.user.userId)
+        console.log(req.body)
         req.body.image = imageUrl
         req.body.createdBy = req.user.userId;
         req.body.ownedBy = req.user.userId;
@@ -34,11 +38,14 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 export const Get = async (req: Request | any, res: Response | any) => {
 
     try {
-        let options: any = { deletedAt: null, }
+        const { app_name } = req.query;
+        let app_id = await App_get(app_name, req.user.userId)
+
+        let options: any = { app_id, deletedAt: null, }
         if (req.user.role == "admin") {
-            options = { deletedAt: null, ownedBy: req.user.userId }
+            options = { app_id, deletedAt: null, ownedBy: req.user.userId }
         } else {
-            options = { deletedAt: null, createdBy: req.user.userId }
+            options = { app_id, deletedAt: null, createdBy: req.user.userId }
         }
         const { page = 1, limit = 10, } = req.query;
         const services: any = await Service.find(options).skip((page - 1) * limit)
@@ -63,9 +70,9 @@ export const GetBykey = async (req: Request | any, res: Response | any) => {
 
     try {
 
-        const { page = 1, limit = 10, category, secret_key } = req.query;
-        const user: any = await User.findOne({ secret_key: secret_key })
-        const services: any = await Service.find({ active: true, deletedAt: null, ownedBy: user._id, category }).skip((page - 1) * limit)
+        const { page = 1, limit = 10, category, app_name } = req.query;
+        let app_id = await App_get(app_name, req.user.userId)
+        const services: any = await Service.find({ active: true, deletedAt: null, app_id: app_id, category }).skip((page - 1) * limit)
             .limit(parseInt(limit))
             .sort({ createdAt: -1 })
         const total = await Service.countDocuments();
