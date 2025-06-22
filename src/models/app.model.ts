@@ -7,7 +7,8 @@ const APPSchema = new mongoose.Schema({
   app_name: { type: String },
   tagline: { type: String },
   logo: { type: String },
- 
+  code: { type: String, },
+
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'user_tb'

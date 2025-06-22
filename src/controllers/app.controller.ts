@@ -31,7 +31,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 
         // let io = getSocketIo()
         // io.to('admin123').emit('new-service');
-        res.status(201).json({ ok: true, message: "App Created  ", newApp });
+        res.status(201).json(newApp);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error", error });
