@@ -24,7 +24,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 };
 export const post_comment = async (req: Request | any, res: Response): Promise<void> => {
     try {
-
+        console.log(req)
         const { id } = req.params;
 
         req.body.postId = id
@@ -91,7 +91,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
         // }
         const { page = 1, limit = 10, } = req.query;
         const posts: any = await Post.find(options).skip((page - 1) * limit)
-            .limit(parseInt(limit)).populate('createdBy', 'name').populate('comments', 'text').populate('likes','name')
+            .limit(parseInt(limit)).populate('createdBy', 'name').populate('comments', 'text').populate('likes', 'name')
             .sort({ createdAt: -1 })
         const total = await Post.countDocuments();
         res.status(201).json(

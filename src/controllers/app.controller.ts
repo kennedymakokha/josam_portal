@@ -14,8 +14,8 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
     try {
         const exists: any = await App.findOne({ createdBy: req.user.userId, app_name: req.body.app_name })
         if (exists) {
-
-            res.status(400).json({ message: "You lready have this app " });
+            res.status(400).json(`App with name ${req.body.app_name} already exists`);
+            return
         }
         const file = req.file as Express.Multer.File;
         let imageUrl = ``;
@@ -32,6 +32,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         // let io = getSocketIo()
         // io.to('admin123').emit('new-service');
         res.status(201).json(newApp);
+        return
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error", error });
