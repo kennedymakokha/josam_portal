@@ -32,11 +32,11 @@ export const post_comment = async (req: Request | any, res: Response): Promise<v
         const new_comment = new Comments(req.body);
         await new_comment.save();
         const post = await Post.findById(id)
-        console.log(post)
+
         let newcomments = post?.comments.push(new_comment._id)
-        console.log("new comment", newcomments)
+
         let v = await Post.findOneAndUpdate({ _id: req.params.id }, { comments: newcomments }, { new: true, useFindAndModify: false })
-        console.log(v)
+        console.log('updated post', v)
 
         // let io = getSocketIo()
         // io.broadcast.emit('comment_added', new_comment);
