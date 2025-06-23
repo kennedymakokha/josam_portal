@@ -24,7 +24,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 };
 export const post_comment = async (req: Request | any, res: Response): Promise<void> => {
     try {
-        console.log(req)
+        console.log(req.body)
         const { id } = req.params;
 
         req.body.postId = id
@@ -32,16 +32,18 @@ export const post_comment = async (req: Request | any, res: Response): Promise<v
         const new_comment = new Comments(req.body);
         await new_comment.save();
         const post = await Post.findById(id)
+        console.log(req.body)
         let newcomments = post?.comments.push(new_comment._id)
+        console.log(newcomments)
         let v = await Post.findOneAndUpdate({ _id: req.params.id }, { comments: newcomments }, { new: true, useFindAndModify: false })
-
+        console.log(v)
 
         // let io = getSocketIo()
         // io.broadcast.emit('comment_added', new_comment);
         res.status(201).json({ message: "Product added successfully", new_comment });
         return
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         res.status(500).json({ message: "Server error", error });
     }
 };
