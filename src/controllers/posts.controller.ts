@@ -24,7 +24,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 };
 export const post_comment = async (req: Request | any, res: Response): Promise<void> => {
     try {
-        console.log(req.body)
+
         const { id } = req.params;
 
         req.body.postId = id
@@ -32,9 +32,9 @@ export const post_comment = async (req: Request | any, res: Response): Promise<v
         const new_comment = new Comments(req.body);
         await new_comment.save();
         const post = await Post.findById(id)
-        console.log(req.body)
+        console.log(post)
         let newcomments = post?.comments.push(new_comment._id)
-        console.log(newcomments)
+        console.log("new comment", newcomments)
         let v = await Post.findOneAndUpdate({ _id: req.params.id }, { comments: newcomments }, { new: true, useFindAndModify: false })
         console.log(v)
 
