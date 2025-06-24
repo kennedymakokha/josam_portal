@@ -19,6 +19,12 @@ import { MakeActivationCode } from "../utils/generate_activation.util";
 import { isNumber } from "../utils/isEmpty";
 import { subscribeToRoom } from "../utils/sendNotifications";
 
+
+export const registerUser = async (userData: any) => {
+    const user = new User(userData);
+    const newUser = await user.save();
+    return newUser;
+}
 // User Registration
 export const register = async (req: Request, res: Response) => {
     try {
@@ -126,7 +132,7 @@ export const login = async (req: Request, res: Response) => {
                 { email: identifier },
                 { phone_number: phone }
             ]
-        }).select("phone_number name role email +password activated fcm_token");
+        }).select("phone_number name role email +password activated fcm_token app_id");
 
         if (!userExists) {
             res.status(400).json("User Not Found");
@@ -152,7 +158,7 @@ export const login = async (req: Request, res: Response) => {
             // Generate tokens
             const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
 
-
+            console.log(userExists.app_id)
             res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
             return;
         }
@@ -197,7 +203,7 @@ export const refresh = async (req: Request, res: Response) => {
     });
 };
 export const logout = async (req: Request | any, res: Response): Promise<void> => {
-    console.log(req)
+
     const user: any = await User.findById(req.user.userId);
     if (!user) {
         res.status(404).json({ message: 'User not found !' });

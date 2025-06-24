@@ -73,7 +73,7 @@ const generate_URL_qr_code = async (req: Request | any, res: Response | any) => 
             background,
             logo: req.file?.buffer,
         });
-        const qrData = `?app_name=${app_name}&id=${newQR._id}`;
+        const qrData = `${newQR._id}`;
 
         const pngBuffer = await generateLinkQrBuffer({
             app_name: qrData,

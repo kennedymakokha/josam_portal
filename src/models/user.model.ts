@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
+
 const UserSchema = new mongoose.Schema({
-  phone_number: { type: String, required: true, unique: true },
+  phone_number: { type: String, unique: true },
   name: { type: String, },
   email: { type: String, },
   secret_key: { type: String, },
@@ -9,8 +10,12 @@ const UserSchema = new mongoose.Schema({
   activationCode: { type: String, },
   role: {
     type: String,
-    enum: ["superAdmin", "admin", "user",],
+    enum: ["superadmin", "admin", "user",],
     default: "admin"
+  },
+  app_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'tb_apps'
   },
   activated: { type: Boolean, default: true },
   password: { type: String, required: true, select: false },

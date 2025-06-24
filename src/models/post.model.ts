@@ -16,6 +16,10 @@ const PostSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'user_tb'
   },
+  app_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'tb_apps'
+  },
 
   deletedAt: { type: Date, default: null }
 }, { timestamps: true });

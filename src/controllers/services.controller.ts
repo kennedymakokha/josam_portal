@@ -14,16 +14,14 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         const file = req.file as Express.Multer.File;
         let imageUrl = ``;
         if (file) {
-            imageUrl = `https://form-builder.mtandao.app/api/uploads/${file.filename}`
+            imageUrl = `${process.env.IMAGE_URL}/api/uploads/${file.filename}`
         }
         // let app_id = await App_get(app_name, req.user.userId)
         req.body.app_id = await App_get(req.body.app_name, req.user.userId)
-        console.log(req.body)
         req.body.image = imageUrl
         req.body.createdBy = req.user.userId;
         req.body.ownedBy = req.user.userId;
         const newProduct = new Service(req.body);
-
         await newProduct.save();
         let io = getSocketIo()
         io.to('admin123').emit('new-service');

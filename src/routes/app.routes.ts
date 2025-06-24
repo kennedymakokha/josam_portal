@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Create, Get,  } from "../controllers/app.controller";
+import { Create, Delete, Get, Get_one, Update, } from "../controllers/app.controller";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -28,9 +28,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const router = Router();
-router.get("/", authenticateToken, Get);
+// router.get("/", Get);
+router.get("/apps/all", authenticateToken, Get);
+// router.get("/app", Get_one);
 router.post("/", authenticateToken, upload.single('logo'), Create);
-
-
+router.route('/:id')
+  .delete(authenticateToken, Delete)
+  .get( Get_one)
+  .put(authenticateToken, Update)
+// Update
 
 export default router;

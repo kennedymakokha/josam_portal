@@ -8,7 +8,7 @@ const APPSchema = new mongoose.Schema({
   tagline: { type: String },
   logo: { type: String },
   code: { type: String, },
-
+  scratch_no: { type: String, },
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'user_tb'
