@@ -12,6 +12,7 @@ import { registerUser } from "./auth.controller";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
     const timestamp = Date.now();
+    console.log(timestamp)
 
     // Convert to string and take the last 9 digits
 
@@ -66,8 +67,6 @@ export const Get = async (req: Request | any, res: Response | any) => {
 
             exists = await App.find({ createdBy: req.user.userId })
         }
-
-      
         res.status(200).json(exists)
         return
         // let io = getSocketIo()
@@ -83,7 +82,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const Get_one = async (req: Request | any, res: Response | any) => {
     try {
         const { id } = req.params
-    
+
         if (!id) {
             res.status(400).json({ message: "App ID is required" });
             return;
