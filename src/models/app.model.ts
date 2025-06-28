@@ -9,6 +9,14 @@ const APPSchema = new mongoose.Schema({
   logo: { type: String },
   code: { type: String, },
   scratch_no: { type: String, },
+  forms: [{
+    type: Schema.Types.ObjectId,
+    ref: 'tb_services'
+  }],
+  users: [{
+    type: Schema.Types.ObjectId,
+    ref: 'user_tb'
+  }],
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'user_tb'

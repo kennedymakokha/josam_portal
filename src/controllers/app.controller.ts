@@ -14,6 +14,7 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
     const timestamp = Date.now();
 
     // Convert to string and take the last 9 digits
+
     const nineDigit = timestamp.toString().slice(-9);
     try {
         const exists: any = await App.findOne({ app_name: req.body.app_name })
@@ -42,6 +43,8 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
             password: req.body.app_name.replace(/\s+/g, '').toLowerCase() + '123',
             app_id: newApp._id,
         });
+        newApp.users.push(req.user.userId);
+        await newApp.save(); // persist changes
         // let io = getSocketIo()
         // io.to('admin123').emit('new-service');
         res.status(201).json(newApp);
@@ -60,15 +63,11 @@ export const Get = async (req: Request | any, res: Response | any) => {
         if (user.role === 'superadmin') {
             exists = await App.find()
         } else {
-            if (id === "all") {
-                exists = await App.find({ createdBy: req.user.userId })
 
-            } else {
-                exists = await App.findById(id)
-            }
+            exists = await App.find({ createdBy: req.user.userId })
         }
 
-        console.log(id)
+      
         res.status(200).json(exists)
         return
         // let io = getSocketIo()
@@ -76,7 +75,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
 
     } catch (error) {
         res.status(404).json(error);
-
+        console.log(error)
         return
 
     }
@@ -84,6 +83,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
 export const Get_one = async (req: Request | any, res: Response | any) => {
     try {
         const { id } = req.params
+    
         if (!id) {
             res.status(400).json({ message: "App ID is required" });
             return;
@@ -110,6 +110,7 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
         // io.broadcast.emit('post_deleted', deleted);
 
     } catch (error) {
+        console.log(error)
         res.status(404).json(error);
 
         return
@@ -121,8 +122,8 @@ export const Update = async (req: Request | any, res: Response | any) => {
     try {
         let updates: any = await App.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         res.status(200).json(updates._id)
-        let io = getSocketIo()
-        io.broadcast.emit('app_updated', updates);
+        // let io = getSocketIo()
+        // io.broadcast.emit('app_updated', updates);
         return
     } catch (error) {
         console.log(error)

@@ -28,8 +28,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 const router = Router();
-// router.get("/", Get);
-router.get("/apps/all", authenticateToken, Get);
+router.get("/",authenticateToken, Get);
+// router.get("/apps/all", authenticateToken, Get);
 // router.get("/app", Get_one);
 router.post("/", authenticateToken, upload.single('logo'), Create);
 router.route('/:id')

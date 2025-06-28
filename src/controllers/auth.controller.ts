@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/user.model";
-
+import { App } from "../models/app.model";
 import { Format_phone_number } from "../utils/simplefunctions.util";
 import jwt from "jsonwebtoken";
 // import jwt_decode from "jwt-decode";
@@ -20,6 +20,7 @@ import { isNumber } from "../utils/isEmpty";
 import { subscribeToRoom } from "../utils/sendNotifications";
 
 
+
 export const registerUser = async (userData: any) => {
     const user = new User(userData);
     const newUser = await user.save();
@@ -29,7 +30,7 @@ export const registerUser = async (userData: any) => {
 export const register = async (req: Request, res: Response) => {
     try {
         const { name, password, phone_number, email } = req.body;
-
+        const app = await App.findOne({ scratch_no: req.body.app_no }).select('_id')
         let phone = await Format_phone_number(phone_number); // format the phone number
         const userExists: any = await User.findOne({
             $or: [
@@ -51,7 +52,9 @@ export const register = async (req: Request, res: Response) => {
             email,
             phone_number: phone,
             password,
+            app_id: app!._id,
             activationCode: activationcode,
+
         };
 
         const user: any = new User(userData);
@@ -67,6 +70,70 @@ export const register = async (req: Request, res: Response) => {
     }
 };
 
+export const login = async (req: Request | any, res: Response): Promise<void> => {
+    try {
+        if (req.method !== "POST") {
+            res.status(405).json("Method Not Allowed");
+            return;
+        }
+       
+        const { identifier, password, fcm_token } = req.body;
+        let name = identifier.split("@")[1] === "mtandao.app" && identifier.split("@")[0]
+
+        const app = await App.findOne({
+            $or: [
+                { scratch_no: req.body.app_no },
+                { app_name: { $regex: new RegExp(`^${name}$`, 'i') } }
+            ]
+        }).select('_id')
+
+        let phone
+        if (isNumber(identifier)) {
+            phone = await Format_phone_number(identifier);
+        }
+        // format the phone number
+
+        const userExists: any = await User.findOne({
+            $or: [
+                { email: identifier },
+                { phone_number: phone }
+            ], app_id: app!._id
+        }).select("phone_number name role email +password activated fcm_token app_id");
+
+        if (!userExists) {
+            res.status(400).json("User Not Found");
+            return;
+        }
+
+        if (!(await bcrypt.compare(password, userExists.password))) {
+            res.status(401).json("Invalid credentials");
+            return;
+        } else {
+
+
+            const existingToken = userExists.fcm_token.find(
+                (token: string) => token === req.body.fcm_token,
+            );
+            if (fcm_token && !existingToken) {
+
+                userExists.fcm_token.push(fcm_token)
+                // Subscribe to room (optional logic)
+                subscribeToRoom({ roomId: "test_room", tokens: [fcm_token] });
+            }
+            userExists.save()
+            // Generate tokens
+            const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
+
+            console.log(userExists.app_id)
+            res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
+            return;
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Server error" });
+    }
+};
 export const updatePassword = async (req: Request, res: Response) => {
     try {
         const { newPassword, phone_number } = req.body;
@@ -112,62 +179,6 @@ export const updateKey = async (req: Request | any, res: Response | any) => {
 
 // Other handlers unchanged except for minor fixes...
 
-export const login = async (req: Request, res: Response) => {
-
-    try {
-
-        if (req.method !== "POST") {
-            res.status(405).json("Method Not Allowed");
-            return;
-        }
-        const { identifier, password, fcm_token } = req.body;
-        let phone
-        if (isNumber(identifier)) {
-            phone = await Format_phone_number(identifier);
-        }
-        // format the phone number
-
-        const userExists: any = await User.findOne({
-            $or: [
-                { email: identifier },
-                { phone_number: phone }
-            ]
-        }).select("phone_number name role email +password activated fcm_token app_id");
-
-        if (!userExists) {
-            res.status(400).json("User Not Found");
-            return;
-        }
-
-        if (!(await bcrypt.compare(password, userExists.password))) {
-            res.status(401).json("Invalid credentials");
-            return;
-        } else {
-
-
-            const existingToken = userExists.fcm_token.find(
-                (token: string) => token === req.body.fcm_token,
-            );
-            if (fcm_token && !existingToken) {
-
-                userExists.fcm_token.push(fcm_token)
-                // Subscribe to room (optional logic)
-                subscribeToRoom({ roomId: "test_room", tokens: [fcm_token] });
-            }
-            userExists.save()
-            // Generate tokens
-            const { accessToken, refreshToken } = generateTokens(userExists, "2hrs");
-
-            console.log(userExists.app_id)
-            res.status(200).json({ ok: true, message: "Logged in", token: accessToken, user: userExists });
-            return;
-        }
-
-    } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: "Server error" });
-    }
-};
 
 // session check
 export const session_Check = async (req: Request | any, res: Response): Promise<void> => {

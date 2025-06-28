@@ -6,25 +6,29 @@ import { User } from "../models/user.model";
 import { getSocketIo } from "../config/socket";
 import { sendNotificationToRoom, sendPushNotification } from "../utils/sendNotifications";
 import { App_get } from "../utils/appGet";
+import { App } from "../models/app.model";
 
 export const Create = async (req: Request | any, res: Response): Promise<void> => {
 
     try {
-
+        const user: any = await User.findById(req.user.userId);
+        const app: any = await App.findById(user.app_id);
         const file = req.file as Express.Multer.File;
         let imageUrl = ``;
         if (file) {
             imageUrl = `${process.env.IMAGE_URL}/api/uploads/${file.filename}`
         }
         // let app_id = await App_get(app_name, req.user.userId)
-        req.body.app_id = await App_get(req.body.app_name, req.user.userId)
+        req.body.app_id = user.app_id
         req.body.image = imageUrl
         req.body.createdBy = req.user.userId;
         req.body.ownedBy = req.user.userId;
         const newProduct = new Service(req.body);
         await newProduct.save();
-        let io = getSocketIo()
-        io.to('admin123').emit('new-service');
+        app.forms.push(newProduct._id);
+        await app.save(); // persist changes
+        // let io = getSocketIo()
+        // io.to('admin123').emit('new-service');
         res.status(201).json({ message: "Product added successfully", newProduct });
     } catch (error) {
         console.error(error);
@@ -36,14 +40,15 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 export const Get = async (req: Request | any, res: Response | any) => {
 
     try {
-        const { app_name } = req.query;
-        let app_id = await App_get(app_name, req.user.userId)
 
-        let options: any = { app_id, deletedAt: null, }
+        const user: any = await User.findById(req.user.userId);
+
+        let options: any = { deletedAt: null, app_id: user.app_id };
+
         if (req.user.role == "admin") {
-            options = { app_id, deletedAt: null, ownedBy: req.user.userId }
+            options = { app_id: user.app_id, deletedAt: null, ownedBy: req.user.userId }
         } else {
-            options = { app_id, deletedAt: null, createdBy: req.user.userId }
+            options = { app_id: user.app_id, deletedAt: null, }
         }
         const { page = 1, limit = 10, } = req.query;
         const services: any = await Service.find(options).skip((page - 1) * limit)
@@ -92,6 +97,8 @@ export const GetBykey = async (req: Request | any, res: Response | any) => {
 
 export const Get_one = async (req: Request | any, res: Response | any) => {
     try {
+
+
         const { id } = req.params;
 
         const product_obj: any = await Service.findById(id)
@@ -104,7 +111,19 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
 
     }
 };
+export const Get_one_by_category = async (req: Request | any, res: Response | any) => {
+    try {
+    
+        const product_obj: any = await Service.findOne({ category: req.params.category, app_id: req.params.app })
+        res.status(201).json(product_obj);
+        return;
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Server error", error });
+        return;
 
+    }
+};
 export const Update = async (req: Request | any, res: Response | any) => {
     try {
 

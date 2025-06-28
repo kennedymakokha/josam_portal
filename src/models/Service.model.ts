@@ -7,13 +7,14 @@ const ServiceSchema = new mongoose.Schema({
   name: { type: String },
   apiEndpoint: { type: String },
   loanDetails: { type: String },
+  loanType: { type: String },
   image: { type: String },
   inputs: { type: Array },
   formId: { type: Number, unique: true }, // Important: must be unique
   active: { type: Boolean, default: true },
   category: {
     type: String,
-    enum: ["service", "loan"],
+    enum: ["service", "loan", "registration", "login"],
     default: "service"
   },
   createdBy: {

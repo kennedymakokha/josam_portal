@@ -24,14 +24,14 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
 };
 export const post_comment = async (req: Request | any, res: Response): Promise<void> => {
     try {
-        
+
         const { id } = req.params;
         const post: any = await Post.findById(id);
         req.body.postId = id
         req.body.createdBy = req.user.userId;
         const new_comment = new Comments(req.body);
         await new_comment.save();
-      
+
 
         post.comments.push(new_comment._id);
         await post.save(); //
@@ -82,7 +82,8 @@ export const toggle_like = async (req: Request | any, res: Response): Promise<vo
 export const Get = async (req: Request | any, res: Response | any) => {
 
     try {
-        let options: any = { deletedAt: null }
+        const user: any = await User.findById(req.user.userId);
+        let options: any = { deletedAt: null, app_id: user.app_id };
         // if (req.user.role == "admin") {
         //     options = { deletedAt: null, ownedBy: req.user.userId }
         // } else {

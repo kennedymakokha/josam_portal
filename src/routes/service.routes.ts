@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Create, Delete, Get, Get_one, GetBykey, togglectivate, Trash, Update } from "../controllers/services.controller";
+import { Create, Delete, Get, Get_one, Get_one_by_category, GetBykey, togglectivate, Trash, Update } from "../controllers/services.controller";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -29,6 +29,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const router = Router();
 router.get("/", authenticateToken, Get);
+router.get("/:app/:category", Get_one_by_category);
 router.post("/", authenticateToken, upload.single('image'), Create);
 router.put("/:id", authenticateToken, Update);
 router.put("/toggle-active/:id", authenticateToken, togglectivate);

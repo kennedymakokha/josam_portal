@@ -32,11 +32,11 @@ const httpServer = createServer(app);
 app.set('trust proxy', true);
 // CORS configuration
 const allowedOrigins = [
+  "*",
   'http://localhost:9000',
   'http://localhost:3000',
   'https://formbuilder.mtandao.app',
-  'https://3589-41-90-184-236.ngrok-free.app'
-
+  'https://4242-41-90-180-102.ngrok-free.app'
 ];
 
 const io = new IOServer(httpServer, {
