@@ -27,8 +27,8 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         await newProduct.save();
         app.forms.push(newProduct._id);
         await app.save(); // persist changes
-        // let io = getSocketIo()
-        // io.to('admin123').emit('new-service');
+        let io = getSocketIo()
+        io.to('admin123').emit('new-service');
         res.status(201).json({ message: "Product added successfully", newProduct });
     } catch (error) {
         console.error(error);
@@ -113,7 +113,7 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
 };
 export const Get_one_by_category = async (req: Request | any, res: Response | any) => {
     try {
-    
+    ``
         const product_obj: any = await Service.findOne({ category: req.params.category, app_id: req.params.app })
         res.status(201).json(product_obj);
         return;

@@ -46,8 +46,9 @@ export const Create = async (req: Request | any, res: Response): Promise<void> =
         });
         newApp.users.push(req.user.userId);
         await newApp.save(); // persist changes
-        // let io = getSocketIo()
-        // io.to('admin123').emit('new-service');
+        let io = getSocketIo()
+        io.to('admin123').emit('app-update');
+
         res.status(201).json(newApp);
         return
     } catch (error) {
@@ -69,8 +70,7 @@ export const Get = async (req: Request | any, res: Response | any) => {
         }
         res.status(200).json(exists)
         return
-        // let io = getSocketIo()
-        // io.broadcast.emit('post_deleted', deleted);
+
 
     } catch (error) {
         res.status(404).json(error);
@@ -105,8 +105,7 @@ export const Get_one = async (req: Request | any, res: Response | any) => {
         }
         res.status(200).json(exists)
         return
-        // let io = getSocketIo()
-        // io.broadcast.emit('post_deleted', deleted);
+  
 
     } catch (error) {
         console.log(error)
@@ -121,8 +120,8 @@ export const Update = async (req: Request | any, res: Response | any) => {
     try {
         let updates: any = await App.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true, useFindAndModify: false })
         res.status(200).json(updates._id)
-        // let io = getSocketIo()
-        // io.broadcast.emit('app_updated', updates);
+        let io = getSocketIo()
+        io.broadcast.emit('app_updated', updates);
         return
     } catch (error) {
         console.log(error)
@@ -134,8 +133,8 @@ export const Trash = async (req: Request | any, res: Response | any) => {
     try {
         let deleted: any = await Post.findOneAndUpdate({ _id: req.params.id }, { deletedAt: Date() }, { new: true, useFindAndModify: false })
         res.status(200).json(`${deleted.product_name} deleted successfully`)
-        // let io = getSocketIo()
-        // io.broadcast.emit('post_deleted', deleted);
+        let io = getSocketIo()
+        io.broadcast.emit('app_deleted', deleted);
         return
     } catch (error) {
         res.status(404).json(error);
@@ -152,8 +151,8 @@ export const Delete = async (req: Request | any, res: Response | any) => {
         if (!deleted) {
             return res.status(404).json({ message: 'post not found' });
         }
-        // let io = getSocketIo()
-        // io.broadcast.emit('post_deleted', deleted);
+        let io = getSocketIo()
+        io.broadcast.emit('app_deleted', deleted);
         res.status(200).json({ message: 'post deleted successfully', deleted });
     } catch (error) {
         console.error('Deletion Error:', error);

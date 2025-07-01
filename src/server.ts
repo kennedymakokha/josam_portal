@@ -14,9 +14,9 @@ import appRoutes from './routes/app.routes'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-
 import path from 'path';
 import * as admin from 'firebase-admin';
+import helmet from 'helmet';
 const serviceAccount = require('../firebase-adminsdk.json');
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
@@ -27,7 +27,7 @@ const PORT = Number(process.env.PORT) || 5000;
 
 // Express + HTTP Server
 const app = express();
-
+app.use(helmet());
 const httpServer = createServer(app);
 app.set('trust proxy', true);
 // CORS configuration
