@@ -30,13 +30,16 @@ export const sendTextMessage = async (message: string, phone: string, reciever: 
             message_id: "",
             status_code: "",
             status_desc: "",
-            ref: ref
+            ref: ref,
+            phone: phone
+
 
         }
         if (Array.isArray(data) && data[0].status_code === "1000") {
             body.status_code = data[0].status_code
             body.status_desc = data[0].status_desc
             body.message_id = data[0].message_id
+
             body.application = application
             const message = new Sms(body);
             await message.save();
@@ -48,6 +51,7 @@ export const sendTextMessage = async (message: string, phone: string, reciever: 
         else {
             body.status_code = data.status_code
             body.status_desc = data.status_desc
+       
             const message = new Sms(body);
             await message.save();
             return {
@@ -74,7 +78,7 @@ export const Balance = async () => {
     let dataIn = {
         api_key,
         sender_id,
-     
+
     }
     try {
         const response: any = await fetch('https://sms.blessedtexts.com/api/sms/v1/credit-balance', {

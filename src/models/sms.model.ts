@@ -11,6 +11,7 @@ const SmsSchema = new Schema<ISms>({
     },
     application: { type: String },
     message: { type: String, required: true },
+    phone: { type: String, required: true },
     status_code: { type: String, required: true },
     message_id: { type: String },
     status_desc: { type: String, required: true },

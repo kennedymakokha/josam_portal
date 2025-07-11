@@ -26,6 +26,7 @@ export interface ISms extends Document {
     status_code: string;
     status_desc: string;
     message_id: string;
+    phone?: string
     ref: "account-activation" | "password-reset"
     timestamp: Date;
 
@@ -62,7 +63,7 @@ export interface ISms extends Document {
     status_code: string;
     status_desc: string;
     message_id: string;
-    application:string
+    application: string
     ref: "account-activation" | "password-reset"
     timestamp: Date;
 
