@@ -47,7 +47,7 @@ export type Category = {
 export type Product = {
     product_name: string;
     price: number | any;
-    description?: string;  
+    description?: string;
     deletedAt?: string;
 };
 export type Inventory = {
@@ -55,3 +55,15 @@ export type Inventory = {
     quantity: number | any;
     deletedAt?: string;
 };
+export interface ISms extends Document {
+
+    receiver: Types.ObjectId;
+    message: string;
+    status_code: string;
+    status_desc: string;
+    message_id: string;
+    application:string
+    ref: "account-activation" | "password-reset"
+    timestamp: Date;
+
+}
