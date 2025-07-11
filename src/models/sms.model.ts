@@ -10,6 +10,7 @@ const SmsSchema = new Schema<ISms>({
         ref: 'user'
     },
     application: { type: String },
+    id: { type: String },
     message: { type: String, required: true },
     phone: { type: String, required: true },
     status_code: { type: String, required: true },
