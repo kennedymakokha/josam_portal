@@ -65,3 +65,36 @@ export const sendTextMessage = async (message: string, phone: string, reciever: 
 
     }
 }
+
+
+
+export const Balance = async () => {
+    let sender_id = "Champ_Int"
+    let api_key = "9b41859b01914a75a2a899b9f61dec93"
+    let dataIn = {
+        api_key,
+        sender_id,
+     
+    }
+    try {
+        const response: any = await fetch('https://sms.blessedtexts.com/api/sms/v1/credit-balance', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(dataIn)
+        });
+
+        const data = await response.json();
+        return data
+
+    } catch (error: any) {
+        console.error('Error:', error);
+        return {
+            success: false,
+            // error: error.message
+        }
+
+    }
+}

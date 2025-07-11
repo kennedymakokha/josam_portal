@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { Get, sendSms } from "../controllers/sms.controller";
+import { Get, GetSmsbalance, sendSms } from "../controllers/sms.controller";
 
 const router = Router();
 
 router.post("/", sendSms);
-
+router.post("/balance", GetSmsbalance);
 router.get("/", Get);
 
 

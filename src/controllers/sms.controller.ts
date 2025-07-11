@@ -1,6 +1,6 @@
 
 import { application, Request, Response } from "express";
-import { sendTextMessage } from "../utils/sms_sender";
+import { Balance, sendTextMessage } from "../utils/sms_sender";
 import Sms from "../models/sms.model";
 
 
@@ -22,6 +22,26 @@ export const sendSms = async (req: Request | any, res: Response | any) => {
             return
         }
     } catch (error) {
+        res.status(400).json({
+            success: false,
+            data: error
+        });
+        return
+    }
+
+}
+
+export const GetSmsbalance = async (req: Request | any, res: Response | any) => {
+
+
+    try {
+        let response = await Balance()
+
+        res.status(400).json(response);
+        return
+
+    } catch (error) {
+        console.log(error)
         res.status(400).json({
             success: false,
             data: error
