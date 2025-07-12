@@ -115,7 +115,7 @@
   },
   "include": [
     "src/**/*"
-, "types/jsonwebtoken.d.ts"  ],
+, "types/jsonwebtoken.d.ts","types/declaration.d.ts"   ],
   "exclude": [
     "node_modules",
   

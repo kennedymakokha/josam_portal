@@ -10,7 +10,8 @@ import serviceRoutes from './routes/service.routes';
 import postRoutes from './routes/post.routes';
 import authRoutes from './routes/auth.routes'
 import codeRoutes from './routes/code.routes';
-import  smsRoute from './routes/sms.route'
+import pdfRoute from './routes/pdf.route';
+import smsRoute from './routes/sms.route'
 import appRoutes from './routes/app.routes'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -66,10 +67,11 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/theme', appRoutes);
 app.use("/api/sms", smsRoute);
+app.use("/api/pdf", pdfRoute);
 
 // Start server
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 // Setup WebSocket
