@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import fs from "fs";
 import path from "path";
-
+// @ts-ignore
 import { getDocument, PDFDocumentProxy } from "pdfjs-dist/legacy/build/pdf.js";
 
 export const GetTextFromPDF = async (req: Request, res: Response): Promise<void> => {
